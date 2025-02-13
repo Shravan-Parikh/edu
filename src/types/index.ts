@@ -73,12 +73,12 @@ export interface MarkdownComponentProps {
 export interface Message {
   type: 'user' | 'ai';
   content?: string;
-  topics?: Array<RelatedTopic>; // Use RelatedTopic interface here
-  questions?: Array<RelatedQuestion>; // Use RelatedQuestion interface here
+  topics?: Array<RelatedTopic>; 
+  questions?: Array<RelatedQuestion>; 
 }
 
-export interface RelatedQuestion { // Added RelatedQuestion interface
-  question: string; // Changed from query to question for clarity and backend consistency
+export interface RelatedQuestion { 
+  question: string; 
   type: string;
   context: string;
 }

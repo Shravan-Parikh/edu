@@ -1,5 +1,6 @@
 // src/services/api.ts
-import { Question, UserContext, ExploreResponse , Message  } from "../types";
+import { Question, UserContext, ExploreResponse   } from "../types";
+import { Message } from "../types/index";
 import { GPTService } from "./gptService";
 
 const gptService = new GPTService();

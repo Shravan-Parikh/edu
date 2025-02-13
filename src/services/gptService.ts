@@ -1,5 +1,6 @@
 // src/services/gptService.ts
-import { Question, UserContext, ExploreResponse, Message } from '../types'; // Import Message type
+import { Question, UserContext, ExploreResponse } from '../types'; // Import Message type
+import { Message } from "../types/index";
 
 export class GPTService {
   private workerUrl: string;
