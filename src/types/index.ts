@@ -69,3 +69,16 @@ export interface MarkdownComponentProps {
   children?: React.ReactNode;
   [key: string]: any;
 }
+
+export interface Message {
+  type: 'user' | 'ai';
+  content?: string;
+  topics?: Array<RelatedTopic>; // Use RelatedTopic interface here
+  questions?: Array<RelatedQuestion>; // Use RelatedQuestion interface here
+}
+
+export interface RelatedQuestion { // Added RelatedQuestion interface
+  question: string; // Changed from query to question for clarity and backend consistency
+  type: string;
+  context: string;
+}

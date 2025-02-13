@@ -1,5 +1,5 @@
 // src/services/api.ts
-import { Question, UserContext, ExploreResponse } from "../types";
+import { Question, UserContext, ExploreResponse , Message  } from "../types";
 import { GPTService } from "./gptService";
 
 const gptService = new GPTService();
@@ -39,9 +39,19 @@ export const api = {
     }
   },
 
-  async explore(query: string, userContext: UserContext): Promise<ExploreResponse> {
+  // async explore(query: string, userContext: UserContext): Promise<ExploreResponse> {
+  //   try {
+  //     const response = await gptService.getExploreContent(query, userContext);
+  //     return response;
+  //   } catch (error) {
+  //     console.error("Explore error:", error);
+  //     throw new Error("Failed to explore topic");
+  //   }
+  // }
+
+  async explore(query: string, userContext: UserContext, chatHistory: Message[]): Promise<ExploreResponse> { // Add chatHistory param
     try {
-      const response = await gptService.getExploreContent(query, userContext);
+      const response = await gptService.getExploreContent(query, userContext, chatHistory); // Pass chatHistory to gptService
       return response;
     } catch (error) {
       console.error("Explore error:", error);
