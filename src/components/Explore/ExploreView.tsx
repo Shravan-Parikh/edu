@@ -173,6 +173,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   const gptService = useMemo(() => new GPTService(), []);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const isFirstMessage = useRef(true);
 
   // Add a ref for the messages container
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -189,8 +190,17 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   }, []);
 
   // Auto-scroll to bottom on new messages
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // }, [messages]);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!isFirstMessage.current && messages.length > 0) { // Condition to prevent initial scroll
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (messages.length > 0) {
+      isFirstMessage.current = false; // After first message set ref to false
+    }
   }, [messages]);
 
   // Add effect to listen for reset (no changes needed)
@@ -214,7 +224,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
       setMessages(prevMessages => [...prevMessages, { type: 'user', content: query }]);
       setMessages(prevMessages => [...prevMessages, { type: 'ai', content: '' }]);
-
+      isFirstMessage.current = true;
 
       setShowInitialSearch(false);
 
