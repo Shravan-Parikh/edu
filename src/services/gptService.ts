@@ -25,6 +25,11 @@ export class GPTService {
         throw new Error(`API request failed: ${response.status}`);
       }
 
+      if (response.status === 429) {
+        const data = await response.json();
+        alert(`Too many requests. Please try again in ${Math.ceil(data.retryAfter)} seconds`);
+      }
+
       const content = await response.json();
       return content;
     } catch (error) {
@@ -198,7 +203,12 @@ export class GPTService {
           payload: { query, userContext }
         }),
       });
-  
+      
+      if (response.status === 429) {
+        const data = await response.json();
+        alert(`Too many requests. Please try again in ${Math.ceil(data.retryAfter)} seconds`);
+      }
+
       if (!response.ok) {
         throw new Error(`Stream request failed: ${response.status}`);
       }

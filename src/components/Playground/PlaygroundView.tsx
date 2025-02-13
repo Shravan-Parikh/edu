@@ -1,3 +1,4 @@
+// src/components/Playground/PlaygroundView.tsx
 import React, { useState, useEffect } from "react";
 import { SearchBar } from "../shared/SearchBar";
 import { Loading } from "../shared/Loading";
@@ -51,7 +52,6 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   const [nextQuestionCountdown, setNextQuestionCountdown] = useState<
     number | null
   >(null);
-  const [pausedCountdownValue, setPausedCountdownValue] = useState<number | null>(null);
 
   const [sessionStats, setSessionStats] = useState({
     totalQuestions: 0,
@@ -82,11 +82,12 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
 
   const [nextQuestion, setNextQuestion] = useState<Question | null>(null);
   const [preloadedQuestion, setPreloadedQuestion] = useState<Question | null>(null);
+
+  // Add state for tracking when to show next question
   const [shouldShowNext, setShouldShowNext] = useState(false);
 
   const startQuestionTimer = (): void => {
-    if (isPaused) return;
-    
+    // Clear any existing timer first
     if (timerInterval) {
       clearInterval(timerInterval);
     }
@@ -105,8 +106,6 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   };
 
   const prefetchNextQuestion = async () => {
-    if (isPaused) return;
-    
     try {
       const question = await getQuestion(query, 1, userContext);
       setNextQuestion(question);
@@ -116,7 +115,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   };
 
   const fetchNewQuestion = async () => {
-    if (!query || isPaused) return;
+    if (!query) return;
 
     if (sessionStats.totalQuestions >= sessionStats.sessionLimit) {
       setSessionStats((prev) => ({ ...prev, isSessionComplete: true }));
@@ -127,7 +126,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
 
     try {
+      console.log('Fetching next question...'); // Debug log
       const question = await getQuestion(query, 1, userContext);
+      console.log('Question loaded:', question); // Debug log
       setPreloadedQuestion(question);
     } catch (error) {
       console.error("Error fetching question:", error);
@@ -142,15 +143,15 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
       setSelectedAnswer(null);
       setShowExplanation(false);
       setQuery(newQuery);
-      setIsPaused(false);
-      setPausedCountdownValue(null);
 
+      // Load first question immediately
       const firstQuestion = await getQuestion(newQuery, 1, userContext);
       setCurrentQuestion(firstQuestion);
       setSelectedAnswer(null);
-      setCurrentQuestionTime(0);
-      startQuestionTimer();
+      setCurrentQuestionTime(0); // Reset timer
+      startQuestionTimer(); // Start timer for first question
 
+      // Reset stats for new topic
       const isSameTopic = newQuery === query;
       if (!isSameTopic) {
         setStats({
@@ -175,31 +176,11 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   };
 
   const togglePause = () => {
-    setIsPaused((prevPaused) => {
-      if (!prevPaused) {
-        // Pausing
-        stopQuestionTimer();
-        if (nextQuestionCountdown !== null) {
-          setPausedCountdownValue(nextQuestionCountdown);
-          setNextQuestionCountdown(null);
-        }
-        if (nextQuestionTimer) {
-          clearTimeout(nextQuestionTimer);
-          setNextQuestionTimer(null);
-        }
-      } else {
-        // Resuming
-        if (!selectedAnswer) {
-          startQuestionTimer();
-        }
-        if (pausedCountdownValue !== null && selectedAnswer !== null) {
-          setNextQuestionCountdown(pausedCountdownValue);
-          setPausedCountdownValue(null);
-          startCountdown(pausedCountdownValue);
-        }
-      }
-      return !prevPaused;
-    });
+    setIsPaused(!isPaused);
+    if (nextQuestionTimer) {
+      clearTimeout(nextQuestionTimer);
+      setNextQuestionTimer(null);
+    }
   };
 
   const COUNTDOWN_DURATION = 5;
@@ -220,17 +201,15 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     });
   };
 
-  const startCountdown = (startFrom: number = COUNTDOWN_DURATION) => {
-    if (isPaused) return;
-    
-    setNextQuestionCountdown(startFrom);
+  const startCountdown = () => {
+    setNextQuestionCountdown(COUNTDOWN_DURATION);
     const interval = setInterval(() => {
       setNextQuestionCountdown((prev) => {
         if (prev === null) return null;
         const next = prev - 0.1;
         if (next <= 0) {
           clearInterval(interval);
-          setShouldShowNext(true);
+          setShouldShowNext(true); // Trigger question transition
           return null;
         }
         return next;
@@ -247,7 +226,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     updateStats(index === currentQuestion.correctAnswer);
     
     if (!isPaused) {
+      // Start loading next question immediately
       fetchNewQuestion();
+      // Start countdown for transition
       startCountdown();
     }
   };
@@ -276,22 +257,25 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
   }, [nextQuestion]);
 
+  // Use useEffect to handle question transitions
   useEffect(() => {
-    if (shouldShowNext && preloadedQuestion && !isPaused) {
+    if (shouldShowNext && preloadedQuestion) {
+      console.log('Transitioning to next question:', preloadedQuestion);
       setCurrentQuestion(preloadedQuestion);
       setPreloadedQuestion(null);
       setShouldShowNext(false);
       setSelectedAnswer(null);
       setShowExplanation(false);
-      setCurrentQuestionTime(0);
-      startQuestionTimer();
+      setCurrentQuestionTime(0); // Reset timer
+      startQuestionTimer(); // Start timer for new question
       setSessionStats(prev => ({
         ...prev,
         totalQuestions: prev.totalQuestions + 1
       }));
     }
-  }, [shouldShowNext, preloadedQuestion, isPaused]);
+  }, [shouldShowNext, preloadedQuestion]);
 
+  // Add cleanup for timer
   useEffect(() => {
     return () => {
       if (timerInterval) {
