@@ -1,7 +1,6 @@
 // src/hooks/useApi.ts
 import { useState } from "react";
 import { Question, UserContext } from "../types";
-import { Message } from "../types/index";
 import { api } from "../services/api";
 
 export const useApi = () => {
@@ -39,10 +38,10 @@ export const useApi = () => {
     }
   };
 
-  const explore = async (query: string, userContext: UserContext, chatHistory: Message[]) => { // Add chatHistory param
+  const explore = async (query: string, userContext: UserContext) => { // Add chatHistory param
     setIsLoading(true);
     try {
-      return await api.explore(query, userContext, chatHistory); // Pass chatHistory to api.explore
+      return await api.explore(query, userContext); // Pass chatHistory to api.explore
     } catch (err) {
       console.error("API Error:", err);
       throw err;

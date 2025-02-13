@@ -178,22 +178,6 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   // Add a ref for the messages container
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // More reliable scroll to top function (no changes needed)
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 100);
-  }, []);
-
-  // Auto-scroll to bottom on new messages
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  // }, [messages]);
-
   useEffect(() => {
     if (!isFirstMessage.current && messages.length > 0) { // Condition to prevent initial scroll
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -231,7 +215,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
       await gptService.streamExploreContent(
         query,
         userContext,
-        messages, // Pass the current messages history here as context
+        messages as import("../../types/index").Message[], 
         (chunk: StreamChunk) => {
           setMessages(prevMessages => {
             const lastMessageIndex = prevMessages.length - 1;

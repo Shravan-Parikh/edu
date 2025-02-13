@@ -78,7 +78,10 @@ export interface Message {
 }
 
 export interface RelatedQuestion { 
-  question: string; 
-  type: string;
-  context: string;
-}
+    topic: string;
+    type: string;
+    reason: string;
+    query?: string;
+    context?: string;
+  };
+  

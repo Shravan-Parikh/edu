@@ -1,6 +1,5 @@
 // src/services/api.ts
 import { Question, UserContext, ExploreResponse   } from "../types";
-import { Message } from "../types/index";
 import { GPTService } from "./gptService";
 
 const gptService = new GPTService();
@@ -50,9 +49,9 @@ export const api = {
   //   }
   // }
 
-  async explore(query: string, userContext: UserContext, chatHistory: Message[]): Promise<ExploreResponse> { // Add chatHistory param
+  async explore(query: string, userContext: UserContext): Promise<ExploreResponse> { // Add chatHistory param
     try {
-      const response = await gptService.getExploreContent(query, userContext, chatHistory); // Pass chatHistory to gptService
+      const response = await gptService.getExploreContent(query, userContext); // Pass chatHistory to gptService
       return response;
     } catch (error) {
       console.error("Explore error:", error);
