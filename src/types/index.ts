@@ -69,31 +69,3 @@ export interface MarkdownComponentProps {
   children?: React.ReactNode;
   [key: string]: any;
 }
-
-// Add other shared types here 
-
-// export interface UserContext {
-//   age: number;
-// }
-
-// export interface ExploreResponse {
-//   content: string;
-//   relatedTopics: Array<any>;
-//   relatedQuestions: Array<any>;
-// }
-
-// export interface Question {
-//   text: string;
-//   options: string[];
-//   correctAnswer: number;
-//   explanation: {
-//     correct?: string;
-//     key_point?: string;
-//   } | string;
-//   difficulty: number;
-//   topic: string;
-//   subtopic: string;
-//   questionType: string;
-//   ageGroup: string;
-//   examType?: string;
-// }

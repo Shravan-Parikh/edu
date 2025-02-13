@@ -4,7 +4,6 @@ export class GPTService {
   private workerUrl: string;
 
   constructor() {
-    // Replace with your worker URL
     this.workerUrl = import.meta.env.VITE_WORKER_URL;
   }
 
@@ -219,13 +218,13 @@ export class GPTService {
       if (data.candidates && data.candidates[0]?.content?.parts) {
         const content = data.candidates[0].content.parts[0].text;
         
-        // Split content into text and JSON parts
+        
         const [textContent, jsonStr] = content.split('---').map((part: string) => part.trim());
         
         let topics: any[] = [];
         let questions: any[] = [];
         
-        // Parse the JSON section if it exists
+     
         if (jsonStr) {
           try {
             const parsed = JSON.parse(jsonStr);
